@@ -18,6 +18,7 @@ import express from "express";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { logToolCall } from "./analytics.js";
 
 // ── Configuration ──────────────────────────────────────────────────────────
 
@@ -123,8 +124,13 @@ server.registerTool(
     },
   },
   async ({ question }) => {
+    const startTime = Date.now();
     try {
       const result = await consultCouncil(question);
+      const durationMs = Date.now() - startTime;
+
+      // Log to analytics before returning (awaited so it completes)
+      await logToolCall("consult_council", question.length, durationMs);
 
       // Build a readable text summary for the agent
       const lines: string[] = [];
@@ -184,8 +190,13 @@ server.registerTool(
     },
   },
   async ({ question }) => {
+    const startTime = Date.now();
     try {
       const result = await recommendOracle(question);
+      const durationMs = Date.now() - startTime;
+
+      // Log to analytics before returning (awaited so it completes)
+      await logToolCall("recommend_oracle", question.length, durationMs);
 
       const text = [
         `**Recommended Oracle: ${result.name}**`,
@@ -234,22 +245,21 @@ app.get("/health", (_req, res) => {
 
 // MCP endpoint — Streamable HTTP transport
 app.post("/mcp", async (req, res) => {
-  // Check for the required MCP protocol version header
-  const protocolVersion =
-    req.headers["mcp-protocol-version"] as string | undefined;
-
-  // Each request gets its own transport + server connection (stateless, per 2026-07-28)
   try {
+    // Create a fresh transport per request (stateless, per 2026-07-28 spec).
+    // The McpServer is connected to this transport for the duration of the request.
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
 
+    // Wire the server to this transport
     await server.connect(transport);
 
-    // Let the transport handle the request
+    // Handle the request — this dispatches to the registered tool handlers
     await transport.handleRequest(req, res, req.body);
 
-    // Clean up after the response is sent
+    // Clean up
     res.on("close", () => {
       transport.close();
+      server.close();
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
