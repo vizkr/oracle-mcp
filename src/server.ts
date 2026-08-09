@@ -76,6 +76,39 @@ async function consultCouncil(question: string): Promise<CouncilResponse> {
 }
 
 /**
+ * Call a single oracle via temple.php (single_oracle mode).
+ * Draws and interprets just one oracle. Returns the reading.
+ */
+interface SingleOracleResponse {
+  oracle: string;
+  name: string;
+  question: string;
+  draw: unknown;
+  reading: string;
+  attribution: string;
+}
+
+async function consultSingleOracle(
+  oracle: string,
+  question: string
+): Promise<SingleOracleResponse> {
+  const res = await fetch(`${API_BASE}/api/temple.php`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, single_oracle: oracle }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(
+      `Oracle API (${oracle}) returned ${res.status}: ${body.slice(0, 200)}`
+    );
+  }
+
+  return (await res.json()) as SingleOracleResponse;
+}
+
+/**
  * Call the oracle router endpoint.
  * Returns a recommendation for which oracle best fits the question.
  */
@@ -227,6 +260,231 @@ server.registerTool(
   }
 );
 
+// ── Tool: consult_hafez ────────────────────────────────────────────────────
+
+server.registerTool(
+  "consult_hafez",
+  {
+    title: "Fal-e Hafez Reading",
+    description:
+      "Consult Fal-e Hafez — the Persian practice of divination through the poetry of Hafez of Shiraz. Draws a random ghazal from the Divan and interprets it in the voice of a Sufi scholar. Best for questions of the heart, longing, love, hope, and the soul's quiet questions. The oldest and most-used oracle on SpiritWave Labs.",
+    inputSchema: {
+      question: z
+        .string()
+        .min(3)
+        .max(1000)
+        .describe("The question to consult Hafez about."),
+    },
+  },
+  async ({ question }) => {
+    const startTime = Date.now();
+    try {
+      const result = await consultSingleOracle("hafez", question);
+      const durationMs = Date.now() - startTime;
+      await logToolCall("consult_hafez", question.length, durationMs);
+      const text = [
+        `**Fal-e Hafez Reading**`,
+        ``,
+        `**Question:** ${result.question}`,
+        ``,
+        result.reading,
+        ``,
+        result.attribution,
+      ];
+      return {
+        content: [{ type: "text", text: text.join("\n") }],
+        structuredContent: result as unknown as Record<string, unknown>,
+      };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Hafez consultation failed: ${message}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
+// ── Tool: consult_tarot ────────────────────────────────────────────────────
+
+server.registerTool(
+  "consult_tarot",
+  {
+    title: "Tarot Reading",
+    description:
+      "Consult the Tarot — a three-card Past/Present/Future spread from the Rider-Waite-Smith deck (1909). Interpreted in the Waite tradition with scholarly grounding. Best for complex situations with many moving parts, hidden influences, and psychological depth. Includes crisis-response safety boundaries.",
+    inputSchema: {
+      question: z
+        .string()
+        .min(3)
+        .max(1000)
+        .describe("The question to consult the Tarot about."),
+    },
+  },
+  async ({ question }) => {
+    const startTime = Date.now();
+    try {
+      const result = await consultSingleOracle("tarot", question);
+      const durationMs = Date.now() - startTime;
+      await logToolCall("consult_tarot", question.length, durationMs);
+      const text = [
+        `**Tarot Reading**`,
+        ``,
+        `**Question:** ${result.question}`,
+        ``,
+        result.reading,
+        ``,
+        result.attribution,
+      ];
+      return {
+        content: [{ type: "text", text: text.join("\n") }],
+        structuredContent: result as unknown as Record<string, unknown>,
+      };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Tarot consultation failed: ${message}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
+// ── Tool: consult_iching ───────────────────────────────────────────────────
+
+server.registerTool(
+  "consult_iching",
+  {
+    title: "I Ching Reading",
+    description:
+      "Consult the I Ching (Book of Changes) — the oldest continuously used divination text in the world, over 3,000 years old. Casts a hexagram and interprets it in the voice of a Daoist sage. Best for the dynamics of a situation — what is moving, what is stuck, the right action at the right time, change and transition.",
+    inputSchema: {
+      question: z
+        .string()
+        .min(3)
+        .max(1000)
+        .describe("The question to consult the I Ching about."),
+    },
+  },
+  async ({ question }) => {
+    const startTime = Date.now();
+    try {
+      const result = await consultSingleOracle("iching", question);
+      const durationMs = Date.now() - startTime;
+      await logToolCall("consult_iching", question.length, durationMs);
+      const text = [
+        `**I Ching Reading**`,
+        ``,
+        `**Question:** ${result.question}`,
+        ``,
+        result.reading,
+        ``,
+        result.attribution,
+      ];
+      return {
+        content: [{ type: "text", text: text.join("\n") }],
+        structuredContent: result as unknown as Record<string, unknown>,
+      };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `I Ching consultation failed: ${message}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
+// ── Tool: consult_runes ────────────────────────────────────────────────────
+
+server.registerTool(
+  "consult_runes",
+  {
+    title: "Rune Reading",
+    description:
+      "Consult the Runes — a three-rune draw (Urd/Verdandi/Skuld = Past/Present/Future) from the Elder Futhark. Interpreted in the voice of a Norse völva (seeress). Best for the hidden force at work, what drives the situation beneath the surface, courage, transformation, and the shadow. The voice is terse, grounded, and offers no modern comfort.",
+    inputSchema: {
+      question: z
+        .string()
+        .min(3)
+        .max(1000)
+        .describe("The question to consult the Runes about."),
+    },
+  },
+  async ({ question }) => {
+    const startTime = Date.now();
+    try {
+      const result = await consultSingleOracle("runes", question);
+      const durationMs = Date.now() - startTime;
+      await logToolCall("consult_runes", question.length, durationMs);
+      const text = [
+        `**Rune Reading**`,
+        ``,
+        `**Question:** ${result.question}`,
+        ``,
+        result.reading,
+        ``,
+        result.attribution,
+      ];
+      return {
+        content: [{ type: "text", text: text.join("\n") }],
+        structuredContent: result as unknown as Record<string, unknown>,
+      };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Rune consultation failed: ${message}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
+// ── Tool: consult_geomancy ─────────────────────────────────────────────────
+
+server.registerTool(
+  "consult_geomancy",
+  {
+    title: "Geomancy Reading",
+    description:
+      "Consult Geomancy ('Ilm al-Raml, the Arabic Science of Sand) — casts a full 16-figure shield chart and interprets it. The oldest continuous Western divination tradition. Best for where the problem actually lies, structural diagnosis, practical matters, career, money, property, and health.",
+    inputSchema: {
+      question: z
+        .string()
+        .min(3)
+        .max(1000)
+        .describe("The question to consult Geomancy about."),
+    },
+  },
+  async ({ question }) => {
+    const startTime = Date.now();
+    try {
+      const result = await consultSingleOracle("geomancy", question);
+      const durationMs = Date.now() - startTime;
+      await logToolCall("consult_geomancy", question.length, durationMs);
+      const text = [
+        `**Geomancy Reading**`,
+        ``,
+        `**Question:** ${result.question}`,
+        ``,
+        result.reading,
+        ``,
+        result.attribution,
+      ];
+      return {
+        content: [{ type: "text", text: text.join("\n") }],
+        structuredContent: result as unknown as Record<string, unknown>,
+      };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Geomancy consultation failed: ${message}` }],
+        isError: true,
+      };
+    }
+  }
+);
+
 // ── HTTP Server (Streamable HTTP transport) ────────────────────────────────
 
 const app = express();
@@ -299,5 +557,5 @@ app.listen(PORT, () => {
   console.log(`[SpiritWave Labs MCP] MCP endpoint: http://localhost:${PORT}/mcp`);
   console.log(`[SpiritWave Labs MCP] Health check: http://localhost:${PORT}/health`);
   console.log(`[SpiritWave Labs MCP] API base: ${API_BASE}`);
-  console.log(`[SpiritWave Labs MCP] Tools: consult_council, recommend_oracle`);
+  console.log(`[SpiritWave Labs MCP] Tools: consult_council, recommend_oracle, consult_hafez, consult_tarot, consult_iching, consult_runes, consult_geomancy`);
 });

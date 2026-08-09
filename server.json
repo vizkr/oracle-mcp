@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.spiritwavelabs.council",
-  "description": "The Pentamancy Council — five ancient oracles (Hafez, Tarot, Runes, I Ching, Geomancy) consulted in parallel and synthesized into a single unified reading. Persian Sufi poetry, Western esoteric, Norse, Chinese classical, and Arabic geomantic traditions in one divination engine.",
-  "version": "1.0.0",
-  "title": "SpiritWave Labs Pentamancy Council",
+  "description": "SpiritWave Labs — seven divination tools for AI agents. The Pentamancy Council (five oracles synthesized), plus individual consultations with Fal-e Hafez (Persian), Tarot, I Ching, Runes, and Geomancy. Each tool performs real server-side draws and interprets them using AI grounded in genuine scholarship.",
+  "version": "1.1.0",
+  "title": "SpiritWave Labs Divination Engine",
   "websiteUrl": "https://spiritwavelabs.com",
   "repository": {
     "url": "https://github.com/vizkr/oracle-mcp",
