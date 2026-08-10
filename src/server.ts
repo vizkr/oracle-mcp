@@ -145,7 +145,7 @@ server.registerTool(
   {
     title: "Pentamancy Council Reading",
     description:
-      "Consult the Pentamancy Council — five ancient oracles (Hafez, Tarot, Runes, I Ching, Geomancy) consulted in parallel and synthesized into a single unified reading. Use this when someone needs deep, multi-perspective guidance on a question. The council draws all five oracles server-side, interprets each, then synthesizes. Best for questions of substance: major decisions, emotional crossroads, spiritual direction. Not for trivial yes/no questions.",
+      "Consult the Pentamancy Council — five ancient oracles (Hafez, Tarot, Runes, I Ching, Geomancy) consulted in parallel and synthesized into a single unified reading. Use this when someone needs deep, multi-perspective guidance on a question. The council draws all five oracles server-side, interprets each, then synthesizes. Best for questions of substance: major decisions, emotional crossroads, spiritual direction. Not for trivial yes/no questions. Cost: $0.50 per call (free during launch period).",
     inputSchema: {
       question: z
         .string()
@@ -267,7 +267,7 @@ server.registerTool(
   {
     title: "Fal-e Hafez Reading",
     description:
-      "Consult Fal-e Hafez — the Persian practice of divination through the poetry of Hafez of Shiraz. Draws a random ghazal from the Divan and interprets it in the voice of a Sufi scholar. Best for questions of the heart, longing, love, hope, and the soul's quiet questions. The oldest and most-used oracle on SpiritWave Labs.",
+      "Consult Fal-e Hafez — the Persian practice of divination through the poetry of Hafez of Shiraz. Draws a random ghazal from the Divan and interprets it in the voice of a Sufi scholar. Best for questions of the heart, longing, love, hope, and the soul's quiet questions. The oldest and most-used oracle on SpiritWave Labs. Cost: $0.05 per call (free during launch period).",
     inputSchema: {
       question: z
         .string()
@@ -312,7 +312,7 @@ server.registerTool(
   {
     title: "Tarot Reading",
     description:
-      "Consult the Tarot — a three-card Past/Present/Future spread from the Rider-Waite-Smith deck (1909). Interpreted in the Waite tradition with scholarly grounding. Best for complex situations with many moving parts, hidden influences, and psychological depth. Includes crisis-response safety boundaries.",
+      "Consult the Tarot — a three-card Past/Present/Future spread from the Rider-Waite-Smith deck (1909). Interpreted in the Waite tradition with scholarly grounding. Best for complex situations with many moving parts, hidden influences, and psychological depth. Includes crisis-response safety boundaries. Cost: $0.05 per call (free during launch period).",
     inputSchema: {
       question: z
         .string()
@@ -357,7 +357,7 @@ server.registerTool(
   {
     title: "I Ching Reading",
     description:
-      "Consult the I Ching (Book of Changes) — the oldest continuously used divination text in the world, over 3,000 years old. Casts a hexagram and interprets it in the voice of a Daoist sage. Best for the dynamics of a situation — what is moving, what is stuck, the right action at the right time, change and transition.",
+      "Consult the I Ching (Book of Changes) — the oldest continuously used divination text in the world, over 3,000 years old. Casts a hexagram and interprets it in the voice of a Daoist sage. Best for the dynamics of a situation — what is moving, what is stuck, the right action at the right time, change and transition. Cost: $0.05 per call (free during launch period).",
     inputSchema: {
       question: z
         .string()
@@ -402,7 +402,7 @@ server.registerTool(
   {
     title: "Rune Reading",
     description:
-      "Consult the Runes — a three-rune draw (Urd/Verdandi/Skuld = Past/Present/Future) from the Elder Futhark. Interpreted in the voice of a Norse völva (seeress). Best for the hidden force at work, what drives the situation beneath the surface, courage, transformation, and the shadow. The voice is terse, grounded, and offers no modern comfort.",
+      "Consult the Runes — a three-rune draw (Urd/Verdandi/Skuld = Past/Present/Future) from the Elder Futhark. Interpreted in the voice of a Norse völva (seeress). Best for the hidden force at work, what drives the situation beneath the surface, courage, transformation, and the shadow. The voice is terse, grounded, and offers no modern comfort. Cost: $0.05 per call (free during launch period).",
     inputSchema: {
       question: z
         .string()
@@ -447,7 +447,7 @@ server.registerTool(
   {
     title: "Geomancy Reading",
     description:
-      "Consult Geomancy ('Ilm al-Raml, the Arabic Science of Sand) — casts a full 16-figure shield chart and interprets it. The oldest continuous Western divination tradition. Best for where the problem actually lies, structural diagnosis, practical matters, career, money, property, and health.",
+      "Consult Geomancy ('Ilm al-Raml, the Arabic Science of Sand) — casts a full 16-figure shield chart and interprets it. The oldest continuous Western divination tradition. Best for where the problem actually lies, structural diagnosis, practical matters, career, money, property, and health. Cost: $0.05 per call (free during launch period).",
     inputSchema: {
       question: z
         .string()
