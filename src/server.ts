@@ -28,6 +28,10 @@ const PORT = parseInt(process.env.PORT || "3001", 10);
 // point to a dev server. The MCP server proxies to these endpoints.
 const API_BASE = process.env.SWL_API_BASE || "https://spiritwavelabs.com";
 
+// API key for bypassing human-side gating on temple.php.
+// Must match SWL_MCP_API_KEY in config.php on the VPS.
+const API_KEY = process.env.SWL_API_KEY || "";
+
 // ── PHP API Proxy ──────────────────────────────────────────────────────────
 
 interface CouncilResponse {
@@ -61,7 +65,10 @@ interface OracleRouterResponse {
 async function consultCouncil(question: string): Promise<CouncilResponse> {
   const res = await fetch(`${API_BASE}/api/temple.php`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-SWL-API-Key": API_KEY,
+    },
     body: JSON.stringify({ question }),
   });
 
@@ -94,7 +101,10 @@ async function consultSingleOracle(
 ): Promise<SingleOracleResponse> {
   const res = await fetch(`${API_BASE}/api/temple.php`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-SWL-API-Key": API_KEY,
+    },
     body: JSON.stringify({ question, single_oracle: oracle }),
   });
 
@@ -117,7 +127,10 @@ async function recommendOracle(
 ): Promise<OracleRouterResponse> {
   const res = await fetch(`${API_BASE}/api/oracle-router.php`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-SWL-API-Key": API_KEY,
+    },
     body: JSON.stringify({ question }),
   });
 

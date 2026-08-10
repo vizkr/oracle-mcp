@@ -10,6 +10,7 @@ services:
     environment:
       - PORT=3001
       - SWL_API_BASE=https://spiritwavelabs.com
+      - SWL_API_KEY=${SWL_API_KEY}
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
