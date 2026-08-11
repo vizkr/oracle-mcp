@@ -176,7 +176,7 @@ server.registerTool(
       const durationMs = Date.now() - startTime;
 
       // Log to analytics before returning (awaited so it completes)
-      await logToolCall("consult_council", question.length, durationMs);
+      await logToolCall("consult_council", question.length, durationMs, false, question);
 
       // Build a readable text summary for the agent
       const lines: string[] = [];
@@ -242,7 +242,7 @@ server.registerTool(
       const durationMs = Date.now() - startTime;
 
       // Log to analytics before returning (awaited so it completes)
-      await logToolCall("recommend_oracle", question.length, durationMs);
+      await logToolCall("recommend_oracle", question.length, durationMs, false, question);
 
       const text = [
         `**Recommended Oracle: ${result.name}**`,
@@ -294,7 +294,7 @@ server.registerTool(
     try {
       const result = await consultSingleOracle("hafez", question);
       const durationMs = Date.now() - startTime;
-      await logToolCall("consult_hafez", question.length, durationMs);
+      await logToolCall("consult_hafez", question.length, durationMs, false, question);
       const text = [
         `**Fal-e Hafez Reading**`,
         ``,
@@ -339,7 +339,7 @@ server.registerTool(
     try {
       const result = await consultSingleOracle("tarot", question);
       const durationMs = Date.now() - startTime;
-      await logToolCall("consult_tarot", question.length, durationMs);
+      await logToolCall("consult_tarot", question.length, durationMs, false, question);
       const text = [
         `**Tarot Reading**`,
         ``,
@@ -384,7 +384,7 @@ server.registerTool(
     try {
       const result = await consultSingleOracle("iching", question);
       const durationMs = Date.now() - startTime;
-      await logToolCall("consult_iching", question.length, durationMs);
+      await logToolCall("consult_iching", question.length, durationMs, false, question);
       const text = [
         `**I Ching Reading**`,
         ``,
@@ -429,7 +429,7 @@ server.registerTool(
     try {
       const result = await consultSingleOracle("runes", question);
       const durationMs = Date.now() - startTime;
-      await logToolCall("consult_runes", question.length, durationMs);
+      await logToolCall("consult_runes", question.length, durationMs, false, question);
       const text = [
         `**Rune Reading**`,
         ``,
@@ -474,7 +474,7 @@ server.registerTool(
     try {
       const result = await consultSingleOracle("geomancy", question);
       const durationMs = Date.now() - startTime;
-      await logToolCall("consult_geomancy", question.length, durationMs);
+      await logToolCall("consult_geomancy", question.length, durationMs, false, question);
       const text = [
         `**Geomancy Reading**`,
         ``,
@@ -527,10 +527,9 @@ app.post("/mcp", async (req, res) => {
     // Handle the request — this dispatches to the registered tool handlers
     await transport.handleRequest(req, res, req.body);
 
-    // Clean up
+    // Clean up — close the transport but NOT the server (singleton, must stay alive)
     res.on("close", () => {
       transport.close();
-      server.close();
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

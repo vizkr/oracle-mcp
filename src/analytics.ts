@@ -31,6 +31,7 @@ interface LogEventOptions {
   tool?: string;
   clientInfo?: string;
   questionLength?: number;
+  question?: string;
   result?: "success" | "error";
   durationMs?: number;
   error?: string;
@@ -53,6 +54,8 @@ export async function logMcpEvent(opts: LogEventOptions): Promise<void> {
     if (opts.clientInfo) metadata.client = opts.clientInfo;
     if (opts.questionLength !== undefined)
       metadata.question_length = opts.questionLength;
+    if (opts.question !== undefined)
+      metadata.question = opts.question.slice(0, 500); // truncate for safety
     if (opts.result) metadata.result = opts.result;
     if (opts.durationMs !== undefined) metadata.duration_ms = opts.durationMs;
     if (opts.error) metadata.error = opts.error.slice(0, 200); // truncate
@@ -82,12 +85,14 @@ export async function logToolCall(
   tool: string,
   questionLength: number,
   durationMs: number,
-  paid = false
+  paid = false,
+  question?: string
 ): Promise<void> {
   return logMcpEvent({
     eventType: "mcp_call",
     tool,
     questionLength,
+    question,
     result: "success",
     durationMs,
     paid,
