@@ -2,14 +2,17 @@ FROM node:22-slim
 
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files and install dependencies (including dev for build)
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source and build
 COPY tsconfig.json ./
 COPY src/ ./src/
 RUN npm run build
+
+# Prune dev dependencies (smaller production image)
+RUN npm prune --omit=dev
 
 # Expose the MCP server port
 EXPOSE 3001
