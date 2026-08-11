@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.spiritwavelabs.council",
+  "name": "io.github.vizkr.council",
   "description": "SpiritWave Labs — seven divination tools for AI agents. The Pentamancy Council (five oracles synthesized), plus individual consultations with Fal-e Hafez (Persian), Tarot, I Ching, Runes, and Geomancy. Each tool performs real server-side draws and interprets them using AI grounded in genuine scholarship.",
   "version": "1.1.0",
   "title": "SpiritWave Labs Divination Engine",
