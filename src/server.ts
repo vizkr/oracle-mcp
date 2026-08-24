@@ -19,6 +19,7 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { logToolCall } from "./analytics.js";
+import { x402Paywall } from "./paywall.js";
 
 // ── Configuration ──────────────────────────────────────────────────────────
 
@@ -122,7 +123,7 @@ server.registerTool(
   {
     title: "Pentamancy Council Reading",
     description:
-      "Consult the Pentamancy Council — five ancient oracles (Hafez, Tarot, Runes, I Ching, Geomancy) consulted in parallel and synthesized into a single unified reading. Use this when someone needs deep, multi-perspective guidance on a question. The council draws all five oracles server-side, interprets each, then synthesizes. Best for questions of substance: major decisions, emotional crossroads, spiritual direction. Not for trivial yes/no questions. Cost: $0.50 per call (free during launch period).",
+      "Consult the Pentamancy Council — five ancient oracles (Hafez, Tarot, Runes, I Ching, Geomancy) consulted in parallel and synthesized into a single unified reading. Use this when someone needs deep, multi-perspective guidance on a question. The council draws all five oracles server-side, interprets each, then synthesizes. Best for questions of substance: major decisions, emotional crossroads, spiritual direction. Not for trivial yes/no questions. Cost: $0.50 per call, paid via x402 (USDC on Base).",
     inputSchema: {
       question: z
         .string()
@@ -190,7 +191,7 @@ server.registerTool(
   {
     title: "Fal-e Hafez Reading",
     description:
-      "Consult Fal-e Hafez — the Persian practice of divination through the poetry of Hafez of Shiraz. Draws a random ghazal from the Divan and interprets it in the voice of a Sufi scholar. Best for questions of the heart, longing, love, hope, and the soul's quiet questions. The oldest and most-used oracle on SpiritWave Labs. Cost: $0.05 per call (free during launch period).",
+      "Consult Fal-e Hafez — the Persian practice of divination through the poetry of Hafez of Shiraz. Draws a random ghazal from the Divan and interprets it in the voice of a Sufi scholar. Best for questions of the heart, longing, love, hope, and the soul's quiet questions. The oldest and most-used oracle on SpiritWave Labs. Cost: $0.10 per call, paid via x402 (USDC on Base).",
     inputSchema: {
       question: z
         .string()
@@ -235,7 +236,7 @@ server.registerTool(
   {
     title: "Tarot Reading",
     description:
-      "Consult the Tarot — a three-card Past/Present/Future spread from the Rider-Waite-Smith deck (1909). Interpreted in the Waite tradition with scholarly grounding. Best for complex situations with many moving parts, hidden influences, and psychological depth. Includes crisis-response safety boundaries. Cost: $0.05 per call (free during launch period).",
+      "Consult the Tarot — a three-card Past/Present/Future spread from the Rider-Waite-Smith deck (1909). Interpreted in the Waite tradition with scholarly grounding. Best for complex situations with many moving parts, hidden influences, and psychological depth. Includes crisis-response safety boundaries. Cost: $0.10 per call, paid via x402 (USDC on Base).",
     inputSchema: {
       question: z
         .string()
@@ -280,7 +281,7 @@ server.registerTool(
   {
     title: "I Ching Reading",
     description:
-      "Consult the I Ching (Book of Changes) — the oldest continuously used divination text in the world, over 3,000 years old. Casts a hexagram and interprets it in the voice of a Daoist sage. Best for the dynamics of a situation — what is moving, what is stuck, the right action at the right time, change and transition. Cost: $0.05 per call (free during launch period).",
+      "Consult the I Ching (Book of Changes) — the oldest continuously used divination text in the world, over 3,000 years old. Casts a hexagram and interprets it in the voice of a Daoist sage. Best for the dynamics of a situation — what is moving, what is stuck, the right action at the right time, change and transition. Cost: $0.10 per call, paid via x402 (USDC on Base).",
     inputSchema: {
       question: z
         .string()
@@ -325,7 +326,7 @@ server.registerTool(
   {
     title: "Rune Reading",
     description:
-      "Consult the Runes — a three-rune draw (Urd/Verdandi/Skuld = Past/Present/Future) from the Elder Futhark. Interpreted in the voice of a Norse völva (seeress). Best for the hidden force at work, what drives the situation beneath the surface, courage, transformation, and the shadow. The voice is terse, grounded, and offers no modern comfort. Cost: $0.05 per call (free during launch period).",
+      "Consult the Runes — a three-rune draw (Urd/Verdandi/Skuld = Past/Present/Future) from the Elder Futhark. Interpreted in the voice of a Norse völva (seeress). Best for the hidden force at work, what drives the situation beneath the surface, courage, transformation, and the shadow. The voice is terse, grounded, and offers no modern comfort. Cost: $0.10 per call, paid via x402 (USDC on Base).",
     inputSchema: {
       question: z
         .string()
@@ -370,7 +371,7 @@ server.registerTool(
   {
     title: "Geomancy Reading",
     description:
-      "Consult Geomancy ('Ilm al-Raml, the Arabic Science of Sand) — casts a full 16-figure shield chart and interprets it. The oldest continuous Western divination tradition. Best for where the problem actually lies, structural diagnosis, practical matters, career, money, property, and health. Cost: $0.05 per call (free during launch period).",
+      "Consult Geomancy ('Ilm al-Raml, the Arabic Science of Sand) — casts a full 16-figure shield chart and interprets it. The oldest continuous Western divination tradition. Best for where the problem actually lies, structural diagnosis, practical matters, career, money, property, and health. Cost: $0.10 per call, paid via x402 (USDC on Base).",
     inputSchema: {
       question: z
         .string()
@@ -413,12 +414,16 @@ server.registerTool(
 const app = express();
 app.use(express.json());
 
+// x402 paywall — gates paid tools/call requests only; initialize/tools/list
+// stay free so agents can connect and read prices before paying.
+app.use("/mcp", x402Paywall);
+
 // Health check endpoint (for monitoring / UptimeRobot)
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
     server: "spiritwavelabs-council",
-    version: "1.0.0",
+    version: "1.2.0",
     api_base: API_BASE,
     timestamp: new Date().toISOString(),
   });
@@ -463,9 +468,10 @@ app.use("/mcp", (_req, res) => {
 app.get("/", (_req, res) => {
   res.json({
     name: "SpiritWave Labs Pentamancy Council MCP Server",
-    version: "1.0.0",
+    version: "1.2.0",
     mcp_endpoint: "/mcp",
     health: "/health",
+    pricing: { consult_council: "$0.50", individual_oracles: "$0.10", currency: "USDC on Base (x402)" },
     description:
       "Five-oracle divination council (Hafez, Tarot, Runes, I Ching, Geomancy) for AI agents.",
     website: "https://spiritwavelabs.com",

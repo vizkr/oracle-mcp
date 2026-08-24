@@ -11,6 +11,12 @@ services:
       - PORT=3001
       - SWL_API_BASE=https://spiritwavelabs.com
       - SWL_API_KEY=${SWL_API_KEY}
+      # x402 payments — defaults live in src/paywall.ts; set here to override.
+      # Payee address is public by design (it is in every 402 demand).
+      - X402_ENABLED=true
+      - X402_PAYEE=0x13d07Ab3bD1B404bFEFCA8835A9A702022C3dbde
+      - X402_FACILITATOR=https://x402.org/facilitator
+      - X402_RESOURCE=https://mcp.spiritwavelabs.com/mcp
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s

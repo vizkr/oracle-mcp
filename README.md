@@ -19,6 +19,16 @@ The server draws all five, interprets each, then synthesizes. Best for questions
 ### Individual consultations
 `consult_hafez`, `consult_tarot`, `consult_iching`, `consult_runes`, `consult_geomancy` — each draws its own tradition server-side and interprets it in that tradition's voice. The tool descriptions are written so agents route themselves; there is deliberately no router tool.
 
+## Payments (x402)
+
+Paid from day one. **$0.50 per Council reading, $0.10 per individual oracle**, in USDC on Base via the [x402 protocol](https://x402.org):
+
+- `initialize`, `tools/list`, notifications — **free**. Connect, discover, read the prices.
+- `tools/call` on a paid tool without payment → **HTTP 402** with `paymentRequirements` in the body (scheme `exact`, payee address, atomic amount).
+- Retry with the `X-PAYMENT` header (signed EIP-3009 payload); the [x402 Foundation facilitator](https://x402.org/facilitator) verifies and settles, the call proceeds, and the settlement receipt returns in `X-PAYMENT-RESPONSE`.
+
+Agents using `x402-fetch` (or any x402-aware client) get this flow automatically. Configuration: `X402_PAYEE`, `X402_FACILITATOR`, `X402_ENABLED` (see `docker-compose.yml`).
+
 ## Architecture
 
 This is a **thin proxy**. The MCP server receives JSON-RPC tool calls and forwards them to the existing SpiritWave Labs PHP API:
