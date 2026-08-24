@@ -1,6 +1,6 @@
 {
   "name": "oracle-mcp",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "SpiritWave Labs Pentamancy Council — MCP server exposing the five-oracle Council and oracle router to AI agents.",
   "type": "module",
   "main": "dist/server.js",

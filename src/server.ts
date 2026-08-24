@@ -48,16 +48,6 @@ interface CouncilResponse {
   silent?: string[];
 }
 
-interface OracleRouterResponse {
-  tool: string;
-  name: string;
-  path: string;
-  label: string;
-  reason: string;
-  cta: string;
-  secondary?: { tool: string; name: string; path: string; note: string } | null;
-}
-
 /**
  * Call the Council endpoint (temple.php).
  * Draws all five oracles server-side and returns the synthesis.
@@ -118,37 +108,11 @@ async function consultSingleOracle(
   return (await res.json()) as SingleOracleResponse;
 }
 
-/**
- * Call the oracle router endpoint.
- * Returns a recommendation for which oracle best fits the question.
- */
-async function recommendOracle(
-  question: string
-): Promise<OracleRouterResponse> {
-  const res = await fetch(`${API_BASE}/api/oracle-router.php`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-SWL-API-Key": API_KEY,
-    },
-    body: JSON.stringify({ question }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(
-      `Oracle router returned ${res.status}: ${body.slice(0, 200)}`
-    );
-  }
-
-  return (await res.json()) as OracleRouterResponse;
-}
-
 // ── MCP Server Setup ───────────────────────────────────────────────────────
 
 const server = new McpServer({
   name: "spiritwavelabs-council",
-  version: "1.0.0",
+  version: "1.2.0",
 });
 
 // ── Tool: consult_council ──────────────────────────────────────────────────
@@ -213,60 +177,6 @@ server.registerTool(
       const message = err instanceof Error ? err.message : String(err);
       return {
         content: [{ type: "text", text: `Council consultation failed: ${message}` }],
-        isError: true,
-      };
-    }
-  }
-);
-
-// ── Tool: recommend_oracle ─────────────────────────────────────────────────
-
-server.registerTool(
-  "recommend_oracle",
-  {
-    title: "Oracle Recommender",
-    description:
-      "Recommend which divination oracle best fits a question. Returns a routing decision with the recommended tool and reasoning. Free tool — use this to help decide which oracle tradition is most appropriate before consulting. Returns: tool name, path, reason, and a call-to-action phrase.",
-    inputSchema: {
-      question: z
-        .string()
-        .min(3)
-        .max(500)
-        .describe("The question to find the best oracle for."),
-    },
-  },
-  async ({ question }) => {
-    const startTime = Date.now();
-    try {
-      const result = await recommendOracle(question);
-      const durationMs = Date.now() - startTime;
-
-      // Log to analytics before returning (awaited so it completes)
-      await logToolCall("recommend_oracle", question.length, durationMs, false, question);
-
-      const text = [
-        `**Recommended Oracle: ${result.name}**`,
-        ``,
-        result.reason,
-        ``,
-        `*${result.cta}*`,
-      ];
-
-      if (result.secondary) {
-        text.push(``);
-        text.push(`**Alternative: ${result.secondary.name}** — ${result.secondary.note}`);
-      }
-
-      return {
-        content: [{ type: "text", text: text.join("\n") }],
-        structuredContent: result as unknown as Record<string, unknown>,
-      };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return {
-        content: [
-          { type: "text", text: `Oracle recommendation failed: ${message}` },
-        ],
         isError: true,
       };
     }
@@ -569,5 +479,5 @@ app.listen(PORT, () => {
   console.log(`[SpiritWave Labs MCP] MCP endpoint: http://localhost:${PORT}/mcp`);
   console.log(`[SpiritWave Labs MCP] Health check: http://localhost:${PORT}/health`);
   console.log(`[SpiritWave Labs MCP] API base: ${API_BASE}`);
-  console.log(`[SpiritWave Labs MCP] Tools: consult_council, recommend_oracle, consult_hafez, consult_tarot, consult_iching, consult_runes, consult_geomancy`);
+  console.log(`[SpiritWave Labs MCP] Tools: consult_council, consult_hafez, consult_tarot, consult_iching, consult_runes, consult_geomancy`);
 });
