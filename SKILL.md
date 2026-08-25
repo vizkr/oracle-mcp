@@ -4,7 +4,7 @@
 
 ## What This Is
 
-SpiritWave Labs offers seven divination tools accessible via the Model Context Protocol (MCP). Each tool performs real server-side draws (cards, runes, hexagrams, ghazals, geomantic figures) and interprets them using AI grounded in each tradition's actual scholarship. This is not a random quote generator.
+SpiritWave Labs offers six divination tools accessible via the Model Context Protocol (MCP). Each tool performs real server-side draws (cards, runes, hexagrams, ghazals, geomantic figures) and interprets them using AI grounded in each tradition's actual scholarship. This is not a random quote generator.
 
 Every oracle has a different persona earned by its tradition. The Hafez scholar doesn't sound like the Norse völva. The Daoist sage doesn't sound like the desert astrologer. Each voice is calibrated to its lineage.
 
@@ -13,14 +13,13 @@ Every oracle has a different persona earned by its tradition. The Hafez scholar 
 | Tool | Tradition | Best For | Cost | Latency |
 |------|-----------|----------|------|---------|
 | `consult_council` | All five in parallel + synthesis | Major decisions, emotional crossroads, spiritual direction | $0.50 | ~18s |
-| `consult_hafez` | Persian Fal-e Hafez (495 ghazals) | The heart, longing, love, hope, the soul's quiet questions | $0.05 | ~5s |
-| `consult_tarot` | Rider-Waite-Smith 3-card spread | Complex situations, hidden influences, psychological depth | $0.05 | ~5s |
-| `consult_iching` | I Ching (Book of Changes) | What is moving, what is stuck, right action, change | $0.05 | ~5s |
-| `consult_runes` | Elder Futhark 3-rune draw | Hidden forces, courage, transformation, the shadow | $0.05 | ~5s |
-| `consult_geomancy` | Arabic shield chart (16 figures) | Structural diagnosis, practical matters, career, property | $0.05 | ~5s |
-| `recommend_oracle` | Routing recommendation | Which oracle best fits a given question | Free | ~2s |
+| `consult_hafez` | Persian Fal-e Hafez (495 ghazals) | The heart, longing, love, hope, the soul's quiet questions | $0.10 | ~5s |
+| `consult_tarot` | Rider-Waite-Smith 3-card spread | Complex situations, hidden influences, psychological depth | $0.10 | ~5s |
+| `consult_iching` | I Ching (Book of Changes) | What is moving, what is stuck, right action, change | $0.10 | ~5s |
+| `consult_runes` | Elder Futhark 3-rune draw | Hidden forces, courage, transformation, the shadow | $0.10 | ~5s |
+| `consult_geomancy` | Arabic shield chart (16 figures) | Structural diagnosis, practical matters, career, property | $0.10 | ~5s |
 
-**All tools are free during the launch period.** Pricing shown above takes effect when x402 payment is enabled.
+**Paid via x402** (USDC on Base): the first call to a paid tool returns HTTP 402 with payment requirements; x402-aware clients settle automatically. Discovery is free — connect, list tools, read prices before paying.
 
 ## How to Connect
 
